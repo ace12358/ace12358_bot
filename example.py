@@ -11,8 +11,6 @@ import os
 import numpy as np
 import scipy as sp
 import scipy.spatial.distance
-import matplotlib.pyplot as plt 
-from gensim.models import word2vec
 
 
 def make_vector(sent):
@@ -25,7 +23,7 @@ def make_vector(sent):
     sent_list = result.strip().split(' ')
     sentence_vector = dict()
     for word in sent_list:
-        word = word.decode("utf-8")
+        #word = word.decode("utf-8")
         sentence_vector[word]=1
     return sentence_vector
 
@@ -51,19 +49,21 @@ with API() as api:
         location = mention['user']['location']
         description = mention['user']['description']
 
-        # リプを返す
-    common_cnt = 0
-    best_common_cnt=0
-    best_answer = str()
-    for sent, db_vector in database_sent_vector.items():
-        for word in input_vector.keys():
-            if word in db_vector:
-                common_cnt+=1
-        if common_cnt > best_common_cnt:
-            best_common_cnt = common_cnt
-            best_answer = sent
-        common_cnt=0
-    content = ' '.join(text.split()[1:])
-    api.reply(content, tweet_id, screen_name)
+    # リプを返す
+        try:
+            common_cnt = 0
+            best_common_cnt=0
+            best_answer = str()
 
-
+            for sent, db_vector in database_sent_vector.items():
+                for word in text:
+                    if word in db_vector:
+                        common_cnt+=1
+                if common_cnt > best_common_cnt:
+                    best_common_cnt = common_cnt
+                    best_answer = sent
+                common_cnt=0
+            content = ' '.join(text.split()[1:])
+            api.reply(content, tweet_id, screen_name)
+        except(NameError):
+            pass
